@@ -1,0 +1,143 @@
+{
+  "config": {
+    "configFile": "d:\\Đồ án\\auto-project\\playwright.config.ts",
+    "rootDir": "d:/Đồ án/auto-project",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1,
+      "totalTime": 14185.925000000001
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "dot",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "jsonReports/jsonReport.json"
+        }
+      ],
+      [
+        "html",
+        {
+          "open": "never"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 15000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "d:/Đồ án/auto-project/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "id": "",
+        "name": "",
+        "testDir": "d:/Đồ án/auto-project",
+        "testIgnore": [],
+        "testMatch": [
+          "tests/checkout/checkout_stripe.spec.ts"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "version": "1.37.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "tests\\checkout\\checkout_stripe.spec.ts",
+      "file": "tests/checkout/checkout_stripe.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Checkout via Credit card",
+          "file": "tests/checkout/checkout_stripe.spec.ts",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Checkout thành công qua cổng Stripe",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "failed",
+                      "duration": 13543,
+                      "error": {
+                        "message": "locator.click: DOMException: Failed to execute 'evaluate' on 'Document': The string '//(input[@name='email-address' and contains(@id,'shipping')])[2]' is not a valid XPath expression.\n    at Object.queryAll (<anonymous>:23:25)\n    at InjectedScript._queryEngineAll (<anonymous>:4750:49)\n    at InjectedScript.querySelectorAll (<anonymous>:4737:30)\n    at eval (eval at evaluate (:201:30), <anonymous>:4:35)\n    at UtilityScript.evaluate (<anonymous>:203:17)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n=========================== logs ===========================\nwaiting for locator('xpath=//(input[@name=\\'email-address\\' and contains(@id,\\'shipping\\')])[2]')\n============================================================",
+                        "stack": "Error: locator.click: DOMException: Failed to execute 'evaluate' on 'Document': The string '//(input[@name='email-address' and contains(@id,'shipping')])[2]' is not a valid XPath expression.\n    at Object.queryAll (<anonymous>:23:25)\n    at InjectedScript._queryEngineAll (<anonymous>:4750:49)\n    at InjectedScript.querySelectorAll (<anonymous>:4737:30)\n    at eval (eval at evaluate (:201:30), <anonymous>:4:35)\n    at UtilityScript.evaluate (<anonymous>:203:17)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n=========================== logs ===========================\nwaiting for locator('xpath=//(input[@name=\\'email-address\\' and contains(@id,\\'shipping\\')])[2]')\n============================================================\n    at Object.queryAll (d:\\Đồ án\\auto-project\\<anonymous>:23:25)\n    at InjectedScript._queryEngineAll (d:\\Đồ án\\auto-project\\<anonymous>:4750:49)\n    at InjectedScript.querySelectorAll (d:\\Đồ án\\auto-project\\<anonymous>:4737:30)\n    at eval (d:\\Đồ án\\auto-project\\eval at evaluate (:201:30), <anonymous>:4:35)\n    at UtilityScript.evaluate (d:\\Đồ án\\auto-project\\<anonymous>:203:17)\n    at UtilityScript.<anonymous> (d:\\Đồ án\\auto-project\\<anonymous>:1:44)\n    at SFCheckout.inputCustomerInfo (d:\\Đồ án\\auto-project\\src\\pages\\storefront\\checkoutPage.ts:156:95)\n    at SFCheckout.inputEmail (d:\\Đồ án\\auto-project\\src\\pages\\storefront\\checkoutPage.ts:91:20)\n    at SFCheckout.enterShippingAddress (d:\\Đồ án\\auto-project\\src\\pages\\storefront\\checkoutPage.ts:53:26)\n    at d:\\Đồ án\\auto-project\\tests\\checkout\\checkout_stripe.spec.ts:31:28",
+                        "location": {
+                          "file": "d:\\Đồ án\\auto-project\\<anonymous>",
+                          "column": 25,
+                          "line": 23
+                        }
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "d:\\Đồ án\\auto-project\\<anonymous>",
+                            "column": 25,
+                            "line": 23
+                          },
+                          "message": "Error: locator.click: DOMException: Failed to execute 'evaluate' on 'Document': The string '//(input[@name='email-address' and contains(@id,'shipping')])[2]' is not a valid XPath expression.\n\n\u001b[2m    at Object.queryAll (<anonymous>:23:25)\u001b[22m\n\u001b[2m    at InjectedScript._queryEngineAll (<anonymous>:4750:49)\u001b[22m\n\u001b[2m    at InjectedScript.querySelectorAll (<anonymous>:4737:30)\u001b[22m\n\u001b[2m    at eval (eval at evaluate (:201:30), <anonymous>:4:35)\u001b[22m\n\u001b[2m    at UtilityScript.evaluate (<anonymous>:203:17)\u001b[22m\n\u001b[2m    at UtilityScript.<anonymous> (<anonymous>:1:44)\u001b[22m\n\u001b[2m=========================== logs ===========================\u001b[22m\n\u001b[2mwaiting for locator('xpath=//(input[@name=\\'email-address\\' and contains(@id,\\'shipping\\')])[2]')\u001b[22m\n\u001b[2m============================================================\u001b[22m\n\u001b[2m    at Object.queryAll (d:\\Đồ án\\auto-project\\<anonymous>:23:25)\u001b[22m\n\u001b[2m    at InjectedScript._queryEngineAll (d:\\Đồ án\\auto-project\\<anonymous>:4750:49)\u001b[22m\n\u001b[2m    at InjectedScript.querySelectorAll (d:\\Đồ án\\auto-project\\<anonymous>:4737:30)\u001b[22m\n\u001b[2m    at eval (d:\\Đồ án\\auto-project\\eval at evaluate (:201:30), <anonymous>:4:35)\u001b[22m\n\u001b[2m    at UtilityScript.evaluate (d:\\Đồ án\\auto-project\\<anonymous>:203:17)\u001b[22m\n\u001b[2m    at UtilityScript.<anonymous> (d:\\Đồ án\\auto-project\\<anonymous>:1:44)\u001b[22m\n\u001b[2m    at SFCheckout.inputCustomerInfo (d:\\Đồ án\\auto-project\\src\\pages\\storefront\\checkoutPage.ts:156:95)\u001b[22m\n\u001b[2m    at SFCheckout.inputEmail (d:\\Đồ án\\auto-project\\src\\pages\\storefront\\checkoutPage.ts:91:20)\u001b[22m\n\u001b[2m    at SFCheckout.enterShippingAddress (d:\\Đồ án\\auto-project\\src\\pages\\storefront\\checkoutPage.ts:53:26)\u001b[22m\n\u001b[2m    at d:\\Đồ án\\auto-project\\tests\\checkout\\checkout_stripe.spec.ts:31:28\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2023-10-15T18:48:20.553Z",
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "d:\\Đồ án\\auto-project\\test-results\\tests-checkout-checkout_stripe-Checkout-via-Credit-card-Checkout-thành-công-qua-cổng-Stripe\\test-failed-1.png"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "d:\\Đồ án\\auto-project\\<anonymous>",
+                        "column": 25,
+                        "line": 23
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "8275107d25ba6a715329-46f5a6887076ce8896fc",
+              "file": "tests/checkout/checkout_stripe.spec.ts",
+              "line": 35,
+              "column": 9
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": []
+}
