@@ -34,5 +34,6 @@ test.describe("Checkout via Credit card",() => {
 
     test("Checkout thành công qua cổng Stripe", async () => {
         await checkoutPage.completeOrderWithCreditCard(cartInvalid);
+        //test build job jenkins
     })
 }) 
