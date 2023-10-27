@@ -36,6 +36,7 @@ test.describe("Checkout via Credit card",() => {
         await checkoutPage.completeOrderWithCreditCard(cartInvalid);
         //test build job jenkins
         //test build job jenkins 2
+        //test build job jenkins 3
     
     })
 }) 
