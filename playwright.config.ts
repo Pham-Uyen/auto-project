@@ -3,7 +3,7 @@ import type { PlaywrightTestConfig } from '@playwright/test';
 const config: PlaywrightTestConfig = {
   testMatch: ["tests/checkout/checkout_stripe.spec.ts"],
   use:{
-    headless: false,
+    headless: true,
     screenshot: "on",
 
 
