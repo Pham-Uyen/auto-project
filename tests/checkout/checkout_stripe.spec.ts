@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { SFCheckout } from "../../src/pages/storefront/checkoutPage";
 import { Card } from "../../src/types/pages/checkoutPage";
 
@@ -32,10 +32,8 @@ test.describe("Checkout via Credit card",() => {
         await checkoutPage.continueToPaymentMethod();
     })
 
-    test("Checkout thành công qua cổng Stripe", async () => {
+    test("Checkout thành công qua cổng Stripe", async ({ page }) => {
         await checkoutPage.completeOrderWithCreditCard(cartInvalid);
-        //test build job jenkins
-        //test checkout job jenkins
-        //test
+        await checkoutPage.verifyThankyouPage();
     })
 }) 

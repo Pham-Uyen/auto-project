@@ -45,7 +45,7 @@ readonly domain: string;
 
   async goto(path: string) {
 
-    let url = "https://" + (this.domain + "/" + path).replace(/([^:]\/)\/+/g, "$1");
+    let url = (this.domain + "/" + path).replace(/([^:]\/)\/+/g, "$1");
     if (path.startsWith("http")) {
       url = path;
     }

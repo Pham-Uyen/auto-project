@@ -68,23 +68,23 @@ export class SFCheckout extends SBPage {
             //   await this.selectStateOrProvince(value);
             //   break;
             case "city":
-              await this.inputCity(value);
+              await this.inputCity(value, "shipping", 2);
               break;
-            case "zipcode":
-              await this.inputZipcode(value);
-              break;
+            // case "zipcode":
+            //   await this.inputZipcode(value);
+            //   break;
             case "phone_number":
               await this.inputPhoneNumber(value);
               break;
-            case "company":
-              await this.inputCustomerInfo("company-name", value);
-              break;
-            case "social_id":
-              await this.inputCustomerInfo("social-id", value);
-              break;
+            // case "company":
+            //   await this.inputCustomerInfo("company-name", value);
+            //   break;
+            // case "social_id":
+            //   await this.inputCustomerInfo("social-id", value);
+            //   break;
           }
         }
-        await this.clickBtnContinueToShippingMethod();
+        // await this.clickBtnContinueToShippingMethod();
       }
 
       async inputEmail(email: string, form = "shipping") {
@@ -106,8 +106,8 @@ export class SFCheckout extends SBPage {
         }
       }
     
-      async inputCity(city: string, form = "shipping") {
-        await this.inputCustomerInfo("city", city, form);
+      async inputCity(city: string, form = "shipping", index: number) {
+        await this.inputCustomerInfo("city", city, form, index);
       }
     
       async inputZipcode(zipcode: string, form = "shipping", autoFill?: boolean) {
@@ -152,10 +152,10 @@ export class SFCheckout extends SBPage {
    * @param value value to input
    * @param form for "shipping" | "billing" form, default for "shipping" form
    */
-  async inputCustomerInfo(className: string, value, form = "shipping") {
-    await this.page.locator(`//(input[@name='${className}' and contains(@id,'${form}')])[2]`).click();
-    await this.page.locator(`//input[@name='${className}' and contains(@id,'${form}')]`).fill(value);
-    await this.page.locator(`//input[@name='${className}' and contains(@id,'${form}')]`).evaluate(e => e.blur());
+  async inputCustomerInfo(className: string, value, form = "shipping", index = 1) {
+    await this.page.locator(`(//input[@name='${className}' and contains(@id,'${form}')])[${index}]`).click();
+    await this.page.locator(`(//input[@name='${className}' and contains(@id,'${form}')])[${index}]`).fill(value);
+    await this.page.locator(`(//input[@name='${className}' and contains(@id,'${form}')])[${index}]`).evaluate(e => e.blur());
   }
 
   async clickBtnContinueToShippingMethod() {
@@ -165,23 +165,27 @@ export class SFCheckout extends SBPage {
   }
 
   async continueToPaymentMethod() {
-    const nextStep = this.page.locator("text=Continue to payment method");
-      await nextStep.click();
-      await this.page.waitForSelector(this.xpathPaymentMethodLabel);
+    // const nextStep = this.page.locator("text=Continue to payment method");
+    //   await nextStep.click();
+    //   await this.page.waitForSelector(this.xpathPaymentMethodLabel);
     await this.footerLoc.scrollIntoViewIfNeeded();
   }
 
   async completeOrderWithCreditCard(card: Card) {
     //Select payment method
-    await this.page.locator(this.xpathPaymentMethodStripe).first().scrollIntoViewIfNeeded();
-    await this.page.locator(this.xpathPaymentMethodStripe).first().check();    
+    // await this.page.locator(this.xpathPaymentMethodStripe).first().scrollIntoViewIfNeeded();
+    // await this.page.locator(this.xpathPaymentMethodStripe).check();    
 
     // Input card data
     await this.enterCardNumber(card.number);
     await this.enterExpireDate(card.expire_date);
     await this.enterCVV(card.cvv);
     await this.clickBtnCompleteOrder();
-    await this.page.waitForSelector(this.xpathThankYou);
+    await this.page.waitForTimeout(6000);
+  }
+
+  async verifyThankyouPage() {
+    return await this.page.locator(this.xpathThankYou).isVisible();
   }
 
     /**
@@ -189,14 +193,17 @@ export class SFCheckout extends SBPage {
    * @param cardNumber
    */
     async enterCardNumber(cardNumber: string): Promise<void> {
-      const mainFrame = await this.switchToStripeIframe();
+      // const mainFrame = await this.switchToStripeIframe();
+      // const secondIframeXpath = "//div[@id='stripe-card-number' or @id='creditCardNumber']//iframe";
+      // const validate = await this.isElementExisted(secondIframeXpath, mainFrame);
+      // if (validate) {
+      //   await mainFrame.frameLocator(secondIframeXpath).locator('[placeholder="Card number"]').fill(cardNumber);
+      // } else {
+      //   await mainFrame.locator('[placeholder="Card number"]').fill(cardNumber);
+      // }
+      const iframeStripe = this.page.frameLocator("//iframe[contains(@class,'payment-frame-form') or contains(@id,'stripe-frame-form')]");
       const secondIframeXpath = "//div[@id='stripe-card-number' or @id='creditCardNumber']//iframe";
-      const validate = await this.isElementExisted(secondIframeXpath, mainFrame);
-      if (validate) {
-        await mainFrame.frameLocator(secondIframeXpath).locator('[placeholder="Card number"]').fill(cardNumber);
-      } else {
-        await mainFrame.locator('[placeholder="Card number"]').fill(cardNumber);
-      }
+      await iframeStripe.frameLocator(secondIframeXpath).locator("//span[@class='InputContainer']//input[@name='cardnumber']").fill(cardNumber);
     }
 
       /** payment gateway Stripe
@@ -204,7 +211,7 @@ export class SFCheckout extends SBPage {
    */
 async switchToStripeIframe(timeout = 3000): Promise<Page | FrameLocator> {
   await this.page.waitForLoadState("domcontentloaded");
-  const iframeStripe = "//iframe[contains(@class,'stripe-frame-form') or contains(@id,'stripe-frame-form')]";
+  const iframeStripe = "//iframe[contains(@class,'payment-frame-form') or contains(@id,'stripe-frame-form')]";
   if (await this.isElementExisted(iframeStripe, null, timeout)) {
     return this.page.frameLocator(iframeStripe);
   }
@@ -216,15 +223,9 @@ async switchToStripeIframe(timeout = 3000): Promise<Page | FrameLocator> {
    * @param expireDate
    */
   async enterExpireDate(expireDate: string): Promise<void> {
-    const mainFrame = await this.switchToStripeIframe(100);
-    const secondIframeXpath = "//div[@id='stripe-card-expiry' or @id='expireDate']//iframe";
-    const validate = await this.isElementExisted(secondIframeXpath, mainFrame);
-    if (validate) {
-      await this.isElementExisted('[placeholder="MM\\/YY"]', mainFrame);
-      await mainFrame.frameLocator(secondIframeXpath).locator('[placeholder="MM\\/YY"]').fill(expireDate);
-    } else {
-      await mainFrame.locator('[name="exp-date"]').fill(expireDate);
-    }
+    const iframeStripe = this.page.frameLocator("//iframe[contains(@class,'payment-frame-form') or contains(@id,'stripe-frame-form')]");
+    const secondIframeXpath = "//iframe[@title='Secure expiration date input frame']";
+    await iframeStripe.frameLocator(secondIframeXpath).locator("//span[@class='InputContainer']//input[@name='exp-date']").fill(expireDate);
   }
 
     /**
@@ -232,18 +233,13 @@ async switchToStripeIframe(timeout = 3000): Promise<Page | FrameLocator> {
    * @param cvv
    */
     async enterCVV(cvv: string): Promise<void> {
-      const mainFrame = await this.switchToStripeIframe(100);
-      const secondIframeXpath = "//div[@id='stripe-card-cvc' or @id='cvv']//iframe";
-      const validate = await this.isElementExisted(secondIframeXpath, mainFrame);
-      if (validate) {
-        await mainFrame.frameLocator(secondIframeXpath).locator('[placeholder="CVV"]').fill(cvv);
-      } else {
-        await mainFrame.locator('[placeholder="CVV"]').fill(cvv);
-      }
+      const iframeStripe = this.page.frameLocator("//iframe[contains(@class,'payment-frame-form') or contains(@id,'stripe-frame-form')]");
+      const secondIframeXpath = "//iframe[@title='Secure CVC input frame']";
+      await iframeStripe.frameLocator(secondIframeXpath).locator("//span[@class='InputContainer']//input[@name='cvc']").fill(cvv);
     }
 
     async clickBtnCompleteOrder() {
-      await this.clickAgreedTermsOfServices();
+      // await this.clickAgreedTermsOfServices();
       await this.clickCompleteOrder();
     }
 
@@ -259,8 +255,8 @@ async switchToStripeIframe(timeout = 3000): Promise<Page | FrameLocator> {
   }
 
   async clickCompleteOrder() {
-    await this.page.locator("//button[normalize-space()='Complete order']").hover();
-      await this.page.locator("//button[normalize-space()='Complete order']").click();
+    await this.page.locator("//span[text()='Place your order']").hover();
+      await this.page.locator("//span[text()='Place your order']").click();
   }
 
   async openHomepage() {
