@@ -4,7 +4,7 @@ import { Card } from "../../src/types/pages/checkoutPage";
 
 test.describe("Checkout via Credit card",() => {
     let checkoutPage: SFCheckout;
-    const domain = "http://httpbin.org/";
+    const domain = "https://test-cod.myshopbase.net";
     const customerInfo = {
         "email": "tester@mailtothis.com",
         "first_name": "Uyen",

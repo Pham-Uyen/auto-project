@@ -4,9 +4,9 @@ const config: PlaywrightTestConfig = {
   testMatch: ["tests/checkout/checkout_stripe.spec.ts"],
   use:{
     headless: true,
-    screenshot: "on",
-
-
+    // screenshot: "on",
+    ignoreHTTPSErrors: true,
+    trace: "on"
   },
   reporter: [["dot"], ["html", {
     outputFile: "htmlReports/htmlReport.html"
