@@ -4,7 +4,7 @@ import { Card } from "../../src/types/pages/checkoutPage";
 
 test.describe("Checkout via Credit card",() => {
     let checkoutPage: SFCheckout;
-    const domain = "https://test-cod.myshopbase.net";
+    const domain = "https://checkout-stripe.onshopbase.com/";
     const customerInfo = {
         "email": "tester@mailtothis.com",
         "first_name": "Uyen",
@@ -16,10 +16,25 @@ test.describe("Checkout via Credit card",() => {
         "country_code": "US",
         "phone_number": "0357974381"
     }
-    let cartInvalid: Card = {
+    let cardValid: Card = {
         number: "4242 4242 4242 4242",
         expire_date: "09/24",
-        cvv: "100"
+        cvv: "100",
+        failMessage: ""
+    }
+
+    let cardExpired: Card = {
+        number: "4000 0000 0000 0069",
+        expire_date: "09/24",
+        cvv: "100",
+        failMessage: "Your card has expired."
+    }
+
+    let cardDeclined: Card = {
+        number: "4000 0000 0000 0002",
+        expire_date: "09/24",
+        cvv: "100",
+        failMessage: "The card has been declined for an unknown reason. Please contact your card issuer."
     }
 
     test.beforeEach(async ({ page }) => {
@@ -32,8 +47,18 @@ test.describe("Checkout via Credit card",() => {
         await checkoutPage.continueToPaymentMethod();
     })
 
-    test("Checkout thành công qua cổng Stripe", async ({ page }) => {
-        // await checkoutPage.completeOrderWithCreditCard(cartInvalid);
-        // await checkoutPage.verifyThankyouPage();
+    test("Checkout thành công qua cổng Stripe", async () => {
+        await checkoutPage.completeOrderWithCreditCard(cardValid);
+        expect(await checkoutPage.verifyThankyouPage()).toBeTruthy();
+    })
+
+    test("Checkout không thành công với thẻ hết hạn", async () => {
+        await checkoutPage.completeOrderWithCreditCard(cardExpired);
+        await checkoutPage.verifyFailMessage(cardExpired.failMessage);
+    })
+
+    test("Checkout không thành công khi giao dịch bị từ chối", async () => {
+        await checkoutPage.completeOrderWithCreditCard(cardDeclined);
+        await checkoutPage.verifyFailMessage(cardDeclined.failMessage);
     })
 }) 

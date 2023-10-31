@@ -35,6 +35,7 @@ export class SFCheckout extends SBPage {
         number: "4242424242424242",
         expire_date: "11/23",
         cvv: "100",
+        failMessage: ""
       };
 
       xpathPhoneNumberInShippingMethod = "//input[@id='checkout_shipping_address_shipping_phone']";
@@ -181,11 +182,15 @@ export class SFCheckout extends SBPage {
     await this.enterExpireDate(card.expire_date);
     await this.enterCVV(card.cvv);
     await this.clickBtnCompleteOrder();
-    await this.page.waitForTimeout(6000);
   }
 
   async verifyThankyouPage() {
-    return await this.page.locator(this.xpathThankYou).isVisible();
+    const isThankyouPage = await this.isElementExisted(this.xpathThankYou, null, 10000);
+    return isThankyouPage;
+  }
+
+  async verifyFailMessage(failMessage: string) {
+    await this.page.waitForSelector(`//p[text()='${failMessage}']`);
   }
 
     /**
@@ -203,7 +208,7 @@ export class SFCheckout extends SBPage {
       // }
       const iframeStripe = this.page.frameLocator("//iframe[contains(@class,'payment-frame-form') or contains(@id,'stripe-frame-form')]");
       const secondIframeXpath = "//div[@id='stripe-card-number' or @id='creditCardNumber']//iframe";
-      await iframeStripe.frameLocator(secondIframeXpath).locator("//span[@class='InputContainer']//input[@name='cardnumber']").fill(cardNumber);
+      await iframeStripe.frameLocator(secondIframeXpath).locator("//div[@class='CardNumberField-input-wrapper']//input[@name='cardnumber']").fill(cardNumber);
     }
 
       /** payment gateway Stripe

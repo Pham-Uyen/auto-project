@@ -2,6 +2,7 @@ export type Card = {
     number: string;
     expire_date: string;
     cvv: string;
+    failMessage: string;
   };
 
 export type ShippingAddress = {
