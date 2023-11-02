@@ -1,13 +1,23 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
 
+
+const proxy = `http://${process.env.OCG_PROXY_URL}`
+
 const config: PlaywrightTestConfig = {
-  testMatch: ["tests/checkout/checkout_stripe.spec.ts"],
+  testDir: "tests",
   timeout: 150000,
   use:{
-    headless: true,
+    launchOptions: {
+      // Browser proxy option is required for Chromium on Windows.
+      proxy: { server: proxy }
+    },
+    headless: false,
     // screenshot: "on",
     ignoreHTTPSErrors: true,
-    trace: "on"
+    proxy:{
+      server: proxy,
+    },
+    trace: "on",
   },
   reporter: [["dot"], ["html", {
     outputFile: "htmlReports/htmlReport.html"
