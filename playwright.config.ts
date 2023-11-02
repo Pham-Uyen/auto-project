@@ -11,7 +11,7 @@ const config: PlaywrightTestConfig = {
       // Browser proxy option is required for Chromium on Windows.
       proxy: { server: proxy }
     },
-    headless: false,
+    headless: true,
     // screenshot: "on",
     ignoreHTTPSErrors: true,
     proxy:{
