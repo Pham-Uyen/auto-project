@@ -82,6 +82,12 @@ export class AccountPage extends SBPage {
     await this.page.waitForTimeout(2000);
   }
 
+  async goToOrderDetails() {
+    await this.page.locator("(//div[@class='sb-mr-xs word-break'])[1]").click();
+    await this.page.waitForTimeout(5000);
+  }
+
+
   getXpathMenu(menuName: string): string {
     const xpath =
       `//ul[contains(@class,'menu') or contains(@class,'active treeview-menu') or contains(@class,'nav-sidebar')]` +
@@ -91,4 +97,5 @@ export class AccountPage extends SBPage {
       `|(//span[following-sibling::*[normalize-space()='${menuName}']]//ancestor::a)`;
     return xpath;
   }
+
 }

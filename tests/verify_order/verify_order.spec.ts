@@ -30,13 +30,22 @@ test.describe("Checkout via Credit card",() => {
         await chechoutAPI.selectDefaultShippingMethod(countryCode);
         await chechoutAPI.authorizedThenCreateStripeOrder(card)
         let checkoutInfo = await chechoutAPI.getCheckoutInfo();
+        debugger;
     })
 
-    test("Checkout thành công qua cổng Stripe", async ({ page }) => {
+    test("Kiểm tra order details", async ({ page }) => {
         accountPage = new AccountPage(page, domain);
-        await accountPage.login({
-            email: email,
-            password: password
-        });
+        await test.step("Login vào Dashboard", async () => {
+            await accountPage.login({
+                email: email,
+                password: password
+            });
+        })
+
+        await test.step("Di chuyển tới trang order và truy cập vào order details", async () => {
+            await accountPage.navigateToMenu("Orders");
+            await accountPage.goToOrderDetails();
+        })
+        
     })
 }) 
