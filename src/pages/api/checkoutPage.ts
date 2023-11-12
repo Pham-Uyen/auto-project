@@ -1,7 +1,7 @@
 import { Page, APIRequestContext } from "playwright";
 import { BuyerInfoApi, Product } from "../../types/pages/checkoutApi";
 import { expect } from "@playwright/test";
-import { ShippingMethod } from "../../types/pages/checkoutPage";
+import { Card, ShippingMethod } from "../../types/pages/checkoutPage";
 
 export class CheckoutAPI {
     page: Page;
@@ -10,7 +10,7 @@ export class CheckoutAPI {
     cartToken: string;
     checkoutToken: string;
     shippingMethod = {};
-    publicKey: string;
+    publicKey: "pk_test_51H0MEvDrQ1c0YGaqU7dp7ga3qSBBF8WDJvKq8LVc2kHC9dAYWLhtRoM79nHUGrOAe2xtCkteyKf95OUi6mvVMrjF003BPKJocn";
     gatewayCode: string;
     stripePaymentMethodId: number;
     checkoutPaymentMethodId: number;
@@ -60,7 +60,6 @@ export class CheckoutAPI {
    */
   async addProductToCartThenCheckout(products: Array<Product>) {
     await this.createCart();
-
     for (const product of products) {
       const res = await this.request.put(`https://${this.domain}/api/checkout/next/cart.json`, {
         data: {
@@ -80,7 +79,28 @@ export class CheckoutAPI {
         );
       }
     }
+    await this.getCheckoutInfo();
   }
+
+    /**
+   *
+   * @returns checkout information on checkout page
+   */
+    async getCheckoutInfo() {
+      let res;
+      // retry get checkout info
+      for (let i = 0; i < 3; i++) {
+        res = await this.request.get(`https://${this.domain}/api/checkout/${this.checkoutToken}/info.json`);
+        if (res.ok()) {
+          break;
+        }
+      }
+      if (!res.ok()) {
+        return Promise.reject(`Error message: ${(await res.json()).error} ${new Error().stack}`);
+      }
+      const resBody = await res.json();
+      return resBody.result;
+    }
 
    /**
    * creat an empty cart to generate new cart token, checkout token
@@ -94,7 +114,6 @@ export class CheckoutAPI {
 
     this.cartToken = resBody.result.token;
     this.checkoutToken = resBody.result.checkout_token;
-
     return {
       token: this.cartToken,
       checkout_token: this.checkoutToken,
@@ -117,9 +136,11 @@ export class CheckoutAPI {
         data: {
           email: email,
           shipping_address: shippingAddress,
+          buyer_accepts_marketing: true
         },
       },
     );
+
     if (!res.ok()) {
       return Promise.reject(`Error message: ${(await res.json()).error} ${new Error().stack}`);
     }
@@ -170,5 +191,94 @@ export class CheckoutAPI {
       };
     }
     return resBody.result;
+  }
+
+  /**
+   *
+   * @param card
+   */
+  async authorizedThenCreateStripeOrder(card: Card) {
+    await this.createStripePaymentMethod(card);
+    await this.authorizedOrder();
+  }
+
+    /**
+   * Creates a PaymentMethod object for Stripe gateway
+   * Stripe docs: https://stripe.com/docs/api/payment_methods/create
+   */
+    async createStripePaymentMethod(card: Card) {
+      const expMonth = card.expire_date.split("/")[0].trim();
+      const expYear = card.expire_date.split("/")[1].trim();
+  
+      let formData;
+      formData = {
+        type: "card",
+        "card[number]": card.number,
+        "card[cvc]": card.cvv,
+        "card[exp_month]": "12",
+        "card[exp_year]": "25",
+        "key": "pk_test_51H0MEvDrQ1c0YGaqU7dp7ga3qSBBF8WDJvKq8LVc2kHC9dAYWLhtRoM79nHUGrOAe2xtCkteyKf95OUi6mvVMrjF003BPKJocn",
+      };
+      const res = await this.request.post(`https://api.stripe.com/v1/payment_methods`, {
+        form: formData,
+      });
+      expect(res.status()).toBe(200);
+      const resBody = await res.json();
+      this.stripePaymentMethodId = await resBody.id;
+      console.log("stripe id", this.stripePaymentMethodId);
+    }
+
+      /**
+   * The API create an order with payment status = `Authorized`
+   */
+  async authorizedOrder() {
+    let bodyData;
+    debugger;
+    bodyData = {
+      payment_method: "stripe",
+      provider_payload: {
+        token: "tok_visa",
+        payment_method_id: this.stripePaymentMethodId,
+      },
+    };
+    const res = await this.request.post(
+      `https://${this.domain}/api/checkout/${this.checkoutToken}/charge-authorize.json`,
+      {
+        data: bodyData,
+      },
+    );
+    if (!res.ok()) {
+      return Promise.reject(
+        `Error message: ${(await res.json()).error} \n bodyData = ${bodyData} \n${new Error().stack}`,
+      );
+    }
+    const resBody = await res.json();
+    console.log("resbody", resBody);
+  }
+
+   /**
+   * get order info on dashboard
+   */
+   async getOrderInfo(request: APIRequestContext) {
+    await this.getOrderId();
+    const res = await request.get(`https://${this.domain}/admin/orders/${this.orderId}.json`);
+    expect(res.status()).toBe(200);
+    const resBody = await res.json();
+    return {
+      id: resBody.order.id,
+      subtotal: resBody.order.subtotal_price,
+      total: resBody.order.total_price,
+      shipping_fee: resBody.order.shipping_lines[0].price,
+      discount: resBody.order.total_discounts,
+      financial_status: resBody.order.financial_status,
+      name: resBody.order.name,
+    };
+  }
+
+  async getOrderId() {
+    const res = await this.request.get(`https://${this.domain}/api/checkout/${this.checkoutToken}/info.json`);
+    expect(res.status()).toBe(200);
+    const resBody = await res.json();
+    return (this.orderId = await resBody.result.order.id);
   }
 }
